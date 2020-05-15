@@ -1,0 +1,3 @@
+rootProject.name='AndroidCV345'
+include ':app'
+include ':openCVLibrary345'
