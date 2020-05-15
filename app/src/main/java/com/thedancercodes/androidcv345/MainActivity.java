@@ -3,6 +3,7 @@ package com.thedancercodes.androidcv345;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Toast;
@@ -13,23 +14,44 @@ import org.opencv.android.JavaCameraView;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
+import org.opencv.core.Scalar;
+import org.opencv.core.Size;
+import org.opencv.dnn.Net;
 import org.opencv.imgproc.Imgproc;
+
+import org.opencv.dnn.Dnn;
 
 public class MainActivity extends AppCompatActivity
         implements CameraBridgeViewBase.CvCameraViewListener2 {
 
     CameraBridgeViewBase cameraBridgeViewBase;
     BaseLoaderCallback baseLoaderCallback;
-    boolean startCanny = false;
+    boolean startYolo = false;
+    boolean firstTimeYolo = false;
 
-    public void Canny(View Button) {
+    // The Neural Network
+    Net netYolo;
+
+    public void Yolo(View Button) {
 
         // Boolean Variable to process the frame or not.
-        if (startCanny == false) {
-            startCanny = true;
+        if (startYolo == false) {
+            startYolo = true;
+
+            // Load the Neural Net into memory for teh first time
+            if (firstTimeYolo == false) {
+
+                firstTimeYolo =true;
+
+                // Get files from phone external storage
+                String netYoloCfg = Environment.getExternalStorageDirectory() + "/dnns/yolov3-tiny.cfg";
+                String netYoloWeights = Environment.getExternalStorageDirectory() + "/dnns/yolov3-tiny.weights";
+
+                netYolo = Dnn.readNetFromDarknet(netYoloCfg, netYoloWeights);
+            }
         }
         else {
-            startCanny = false;
+            startYolo = false;
         }
     }
 
@@ -95,12 +117,21 @@ public class MainActivity extends AppCompatActivity
         // Get the frame
         Mat frame = inputFrame.rgba();
 
-        if (startCanny == true) {
-            // Convert current frame to gray scale
-            Imgproc.cvtColor(frame, frame, Imgproc.COLOR_RGBA2GRAY);
+        if (startYolo == true) {
 
-            // Add Edge Detection
-            Imgproc.Canny(frame, frame, 100, 80);
+            // Covert frame to RGB
+            Imgproc.cvtColor(frame, frame, Imgproc.COLOR_RGBA2RGB);
+
+            // Pre-process the image.
+            // A blob is a 4 dimensional matrix of an image that we input into convolution neural net '
+            // that we want it to work with.
+            Mat imageBlob = Dnn.blobFromImage(frame, 0.00392, new Size(416, 416),
+                    new Scalar(0, 0, 0), /*swapRB*/false, /*crop*/false);
+
+            netYolo.setInput(imageBlob);
+
+            netYolo.forward();
+
         }
 
         // Return frame that will be shown on the JavaCameraView
