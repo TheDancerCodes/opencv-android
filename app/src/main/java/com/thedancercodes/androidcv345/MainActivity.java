@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.view.SurfaceView;
+import android.view.View;
 import android.widget.Toast;
 
 import org.opencv.android.BaseLoaderCallback;
@@ -19,7 +20,18 @@ public class MainActivity extends AppCompatActivity
 
     CameraBridgeViewBase cameraBridgeViewBase;
     BaseLoaderCallback baseLoaderCallback;
-    int counter = 0;
+    boolean startCanny = false;
+
+    public void Canny(View Button) {
+
+        // Boolean Variable to process the frame or not.
+        if (startCanny == false) {
+            startCanny = true;
+        }
+        else {
+            startCanny = false;
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,19 +95,13 @@ public class MainActivity extends AppCompatActivity
         // Get the frame
         Mat frame = inputFrame.rgba();
 
-        // Check if the number of frames iterated through is even
-        if (counter % 2 == 0) {
-
-            // Flip the image
-            Core.flip(frame, frame, 1);
-
-            // Change Image Color Scheme
+        if (startCanny == true) {
+            // Convert current frame to gray scale
             Imgproc.cvtColor(frame, frame, Imgproc.COLOR_RGBA2GRAY);
 
+            // Add Edge Detection
+            Imgproc.Canny(frame, frame, 100, 80);
         }
-
-        // Update counter
-        counter = counter + 1;
 
         // Return frame that will be shown on the JavaCameraView
         return frame;
