@@ -1,9 +1,14 @@
 package com.thedancercodes.androidcv345;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.PersistableBundle;
+import android.provider.MediaStore;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -24,6 +29,9 @@ import java.text.DecimalFormat;
 public class LaplacianActivity extends AppCompatActivity {
 
     BaseLoaderCallback baseLoaderCallback;
+
+    private ImageView mImageView;
+    private static final int REQUEST_IMAGE_CAPTURE = 101;
 
     private static final String TAG = "MainActivity";
     public static final int PICK_IMAGE_REQUEST_CODE = 1001;
@@ -83,8 +91,31 @@ public class LaplacianActivity extends AppCompatActivity {
 
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
-        super.onCreate(savedInstanceState, persistentState);
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.camera_layout);
+        mImageView = findViewById(R.id.imageView);
+
+    }
+
+    public void takePicture(View view) {
+        Intent imageTakeIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        if (imageTakeIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(imageTakeIntent, REQUEST_IMAGE_CAPTURE);
+        }
+    }
+
+    // Receive the result from the other application
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+
+        if (requestCode==REQUEST_IMAGE_CAPTURE && resultCode==RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            mImageView.setImageBitmap(imageBitmap);
+        }
+
     }
 
     public void lap_test() {
@@ -150,34 +181,34 @@ public class LaplacianActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        baseLoaderCallback = new BaseLoaderCallback(this) {
-            @Override
-            public void onManagerConnected(int status) {
-                super.onManagerConnected(status);
-
-                switch (status) {
-                    case BaseLoaderCallback.SUCCESS:
-                        lap_test();
-                        break;
-                    default:
-                        super.onManagerConnected(status);
-                        break;
-                }
-            }
-        };
-
-        // Load default libopencv_java.so
-        if (!OpenCVLoader.initDebug()) {
-            Toast.makeText(getApplicationContext(), "There's something wrong", Toast.LENGTH_SHORT).show();
-        } else {
-//            Toast.makeText(getApplicationContext(), "Libraries Loaded!", Toast.LENGTH_SHORT).show();
-            baseLoaderCallback.onManagerConnected(baseLoaderCallback.SUCCESS);
-        }
-    }
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//
+//        baseLoaderCallback = new BaseLoaderCallback(this) {
+//            @Override
+//            public void onManagerConnected(int status) {
+//                super.onManagerConnected(status);
+//
+//                switch (status) {
+//                    case BaseLoaderCallback.SUCCESS:
+//                        lap_test();
+//                        break;
+//                    default:
+//                        super.onManagerConnected(status);
+//                        break;
+//                }
+//            }
+//        };
+//
+//        // Load default libopencv_java.so
+//        if (!OpenCVLoader.initDebug()) {
+//            Toast.makeText(getApplicationContext(), "There's something wrong", Toast.LENGTH_SHORT).show();
+//        } else {
+////            Toast.makeText(getApplicationContext(), "Libraries Loaded!", Toast.LENGTH_SHORT).show();
+//            baseLoaderCallback.onManagerConnected(baseLoaderCallback.SUCCESS);
+//        }
+//    }
 
     private void lap2() {
 
