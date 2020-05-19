@@ -9,6 +9,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.jetbrains.annotations.NotNull;
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Core;
@@ -18,9 +19,20 @@ import org.opencv.core.MatOfDouble;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
+import java.text.DecimalFormat;
+
 public class LaplacianActivity extends AppCompatActivity {
 
     BaseLoaderCallback baseLoaderCallback;
+
+    private static final String TAG = "MainActivity";
+    public static final int PICK_IMAGE_REQUEST_CODE = 1001;
+    private static final int BLUR_THRESHOLD = 200;
+    @NotNull
+    public static final String BLURRED_IMAGE = "BLURRED IMAGE";
+    @NotNull
+    public static final String NOT_BLURRED_IMAGE = "NOT BLURRED IMAGE";
+
 
 
 //    private void opencvProcess() {
@@ -119,7 +131,22 @@ public class LaplacianActivity extends AppCompatActivity {
 
         Log.d("lap_test", String.valueOf(value));
 
-        Toast.makeText(this, String.valueOf(value), Toast.LENGTH_LONG).show();
+        // Old Threshold
+//        Toast.makeText(this, String.valueOf(value), Toast.LENGTH_LONG).show();
+
+//        DecimalFormat("0.00").format(Math.pow(std.get(0, 0)[0], 2.0)).toDouble()
+
+        // Updated Threshold
+        //String value2 = (new DecimalFormat("0.00")).format(Math.pow(dev.get(0, 0)[0], 2.0D));
+        int value2 = (int) Math.pow(dev.get(0, 0)[0], 2.0D);
+
+        Toast.makeText(this, String.valueOf(value2), Toast.LENGTH_LONG).show();
+
+        if (value2 < BLUR_THRESHOLD) {
+            Toast.makeText(this, BLURRED_IMAGE, Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(this, NOT_BLURRED_IMAGE, Toast.LENGTH_LONG).show();
+        }
 
     }
 
@@ -147,7 +174,7 @@ public class LaplacianActivity extends AppCompatActivity {
         if (!OpenCVLoader.initDebug()) {
             Toast.makeText(getApplicationContext(), "There's something wrong", Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(getApplicationContext(), "Libraries Loaded!", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getApplicationContext(), "Libraries Loaded!", Toast.LENGTH_SHORT).show();
             baseLoaderCallback.onManagerConnected(baseLoaderCallback.SUCCESS);
         }
     }
