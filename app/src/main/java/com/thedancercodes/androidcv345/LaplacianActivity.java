@@ -22,6 +22,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.chip.Chip;
 
 import org.jetbrains.annotations.NotNull;
@@ -49,6 +50,8 @@ public class LaplacianActivity extends AppCompatActivity {
     private ImageView mImageView;
     private TextView mTextView;
     private Chip mChip;
+    private MaterialCardView materialCardView;
+    private TextView textCpuArchitecture;
 
     private static final int REQUEST_IMAGE_CAPTURE = 101;
 
@@ -59,6 +62,8 @@ public class LaplacianActivity extends AppCompatActivity {
     public static final String BLURRED_IMAGE = "BLURRED IMAGE";
     @NotNull
     public static final String NOT_BLURRED_IMAGE = "NOT BLURRED IMAGE";
+    @NotNull
+    public static final String NOT_SURE = "NOT SURE";
 
     // Specify a unique name for the file
     String currentImagePath = null;
@@ -119,8 +124,12 @@ public class LaplacianActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.camera_layout);
         mImageView = findViewById(R.id.imageView);
-//        mTextView = findViewById(R.id.textView);
+        mTextView = findViewById(R.id.textView);
         mChip = findViewById(R.id.chip);
+        materialCardView = findViewById(R.id.card);
+        textCpuArchitecture = findViewById(R.id.textCpuArchitecture);
+
+        textCpuArchitecture.setText(getString(R.string.cpu_architecture, System.getProperty("os.arch")));
 
         int requestCode = 200;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -270,7 +279,7 @@ public class LaplacianActivity extends AppCompatActivity {
         Log.d("lap_test", String.valueOf(value));
 
         // Old Threshold
-        Toast.makeText(this, String.valueOf(value), Toast.LENGTH_LONG).show();
+//        Toast.makeText(this, String.valueOf(value), Toast.LENGTH_LONG).show();
 
 //        DecimalFormat("0.00").format(Math.pow(std.get(0, 0)[0], 2.0)).toDouble()
 
@@ -283,17 +292,24 @@ public class LaplacianActivity extends AppCompatActivity {
 
         mChip.setVisibility(View.VISIBLE);
 
-        if (value < BLUR_THRESHOLD) {
+        if (value < 3) {
             Toast.makeText(this, BLURRED_IMAGE, Toast.LENGTH_LONG).show();
-//            mTextView.setText(BLURRED_IMAGE);
+//            mTextView.setText(String.valueOf(value));
+            mTextView.setText(getString(R.string.result_from_opencv, BLURRED_IMAGE, String.valueOf(BLUR_THRESHOLD), String.valueOf(value)));
             mChip.setChipBackgroundColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blurred_image)));
             mChip.setText(BLURRED_IMAGE);
             mChip.setChipIcon(getResources().getDrawable(R.drawable.ic_error_white_24dp));
 
-        } else {
+        } else if(value >= 3.5 && value <= 4.5 ) {
+            Toast.makeText(this, NOT_SURE, Toast.LENGTH_LONG).show();
+            mTextView.setText(getString(R.string.result_from_opencv, NOT_SURE, String.valueOf(BLUR_THRESHOLD), String.valueOf(value)));
+            mChip.setChipBackgroundColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.not_sure)));
+            mChip.setText(NOT_SURE);
+            mChip.setChipIcon(getResources().getDrawable(R.drawable.ic_visibility_white_24dp));
+
+        } else if (value >= 5){
             Toast.makeText(this, NOT_BLURRED_IMAGE, Toast.LENGTH_LONG).show();
-//            mTextView.setText(NOT_BLURRED_IMAGE);
-//            mChip.setBackgroundColor(ContextCompat.getColor(this, R.color.blurred_image));
+            mTextView.setText(getString(R.string.result_from_opencv, NOT_BLURRED_IMAGE, String.valueOf(BLUR_THRESHOLD), String.valueOf(value)));
             mChip.setChipBackgroundColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.not_blurred_image)));
             mChip.setText(NOT_BLURRED_IMAGE);
             mChip.setChipIcon(getResources().getDrawable(R.drawable.ic_check_circle_white_24dp));
