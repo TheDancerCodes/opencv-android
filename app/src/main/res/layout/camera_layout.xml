@@ -38,7 +38,8 @@
 
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+                app:layout_constraintTop_toTopOf="parent"
+                app:fontFamily="@font/avenir"/>
 
         <!-- Media -->
             <ImageView
@@ -68,7 +69,8 @@
                     android:layout_height="wrap_content"
                     android:text="Blur Detection Results"
                     android:layout_gravity="center"
-                    android:textAppearance="?attr/textAppearanceHeadline6" />
+                    android:textAppearance="?attr/textAppearanceHeadline6"
+                    app:fontFamily="@font/avenir"/>
 
                 <TextView
                     android:id="@+id/textView"
@@ -78,7 +80,8 @@
                     tools:text="Sharpness : 500, Blurred Image"
                     android:layout_gravity="right"
                     android:textAppearance="?attr/textAppearanceBody2"
-                    android:textColor="?android:attr/textColorSecondary" />
+                    android:textColor="?android:attr/textColorSecondary"
+                    app:fontFamily="@font/avenir"/>
 
             </LinearLayout>
 
@@ -113,6 +116,7 @@
         android:layout_marginBottom="16dp"
         android:visibility="invisible"
         android:textColor="#ffffff"
+        app:fontFamily="@font/avenir"
         app:layout_constraintBottom_toTopOf="@+id/button2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -132,7 +136,8 @@
         android:text="Take a [picture]"
         app:layout_constraintBottom_toTopOf="@+id/button"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:fontFamily="@font/avenir"/>
 
     <Button
         android:id="@+id/button"
@@ -148,7 +153,8 @@
         android:text="Display Image"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:fontFamily="@font/avenir"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
