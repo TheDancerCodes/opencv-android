@@ -2,9 +2,11 @@ package com.thedancercodes.androidcv345;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.PersistableBundle;
@@ -12,11 +14,15 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+
+import com.google.android.material.chip.Chip;
 
 import org.jetbrains.annotations.NotNull;
 import org.opencv.android.BaseLoaderCallback;
@@ -41,11 +47,14 @@ public class LaplacianActivity extends AppCompatActivity {
     BaseLoaderCallback baseLoaderCallback;
 
     private ImageView mImageView;
+    private TextView mTextView;
+    private Chip mChip;
+
     private static final int REQUEST_IMAGE_CAPTURE = 101;
 
     private static final String TAG = "LaplacianActivity";
     public static final int PICK_IMAGE_REQUEST_CODE = 1001;
-    private static final int BLUR_THRESHOLD = 200;
+    private static final int BLUR_THRESHOLD = 5;
     @NotNull
     public static final String BLURRED_IMAGE = "BLURRED IMAGE";
     @NotNull
@@ -56,7 +65,7 @@ public class LaplacianActivity extends AppCompatActivity {
 
     private static final int IMAGE_REQUEST = 1;
 
-
+    private String [] permissions = {"android.permission.WRITE_EXTERNAL_STORAGE", "android.permission.ACCESS_FINE_LOCATION", "android.permission.READ_PHONE_STATE", "android.permission.SYSTEM_ALERT_WINDOW","android.permission.CAMERA"};
 
 //    private void opencvProcess() {
 //        BitmapFactory.Options options = new BitmapFactory.Options();
@@ -110,6 +119,13 @@ public class LaplacianActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.camera_layout);
         mImageView = findViewById(R.id.imageView);
+//        mTextView = findViewById(R.id.textView);
+        mChip = findViewById(R.id.chip);
+
+        int requestCode = 200;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(permissions, requestCode);
+        }
 
     }
 
@@ -265,10 +281,22 @@ public class LaplacianActivity extends AppCompatActivity {
 //        Toast.makeText(this, String.valueOf(value2), Toast.LENGTH_LONG).show();
 //        Log.d("lap_test", String.valueOf(value2));
 
-        if (value < 5) {
+        mChip.setVisibility(View.VISIBLE);
+
+        if (value < BLUR_THRESHOLD) {
             Toast.makeText(this, BLURRED_IMAGE, Toast.LENGTH_LONG).show();
+//            mTextView.setText(BLURRED_IMAGE);
+            mChip.setChipBackgroundColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blurred_image)));
+            mChip.setText(BLURRED_IMAGE);
+            mChip.setChipIcon(getResources().getDrawable(R.drawable.ic_error_white_24dp));
+
         } else {
             Toast.makeText(this, NOT_BLURRED_IMAGE, Toast.LENGTH_LONG).show();
+//            mTextView.setText(NOT_BLURRED_IMAGE);
+//            mChip.setBackgroundColor(ContextCompat.getColor(this, R.color.blurred_image));
+            mChip.setChipBackgroundColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.not_blurred_image)));
+            mChip.setText(NOT_BLURRED_IMAGE);
+            mChip.setChipIcon(getResources().getDrawable(R.drawable.ic_check_circle_white_24dp));
         }
 
     }
